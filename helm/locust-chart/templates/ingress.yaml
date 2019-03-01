@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: {{ .Values.name }}
+  name: {{ .Values.name }}
+  namespace: default
+spec:
+  rules:
+  - host: '{{ .Values.name }}.{{ .Values.baseDomain }}'
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Values.name }}
+          servicePort: 80
+        path: /
