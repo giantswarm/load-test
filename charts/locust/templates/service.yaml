@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - name: web-ui
+    port: 80
+    protocol: TCP
+    targetPort: 8089
+  - name: master
+    port: 5557
+    protocol: TCP
+    targetPort: 5557
+  - name: master-2
+    port: 5558
+    protocol: TCP
+    targetPort: 5558
+  selector:
+    app: loadgenerator
+  sessionAffinity: None
+  type: ClusterIP

@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.name }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+      - args:
+        - --master
+        env:
+        - name: FRONTEND_ADDR
+          value: '{{ .Values.target.address }}'
+        - name: USERS
+          value: '{{ .Values.user.count }}'
+        image: {{ .Values.image }}
+        imagePullPolicy: Always
+        name: master
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - set -x;  apk add --no-cache curl && until timeout -t 2 curl -f "http://${FRONTEND_ADDR}";
+          do echo "waiting for http://${FRONTEND_ADDR}"; sleep 2; done;
+        env:
+        - name: FRONTEND_ADDR
+          value: {{ .Values.target.address }}
+        image: alpine:3.6
+        imagePullPolicy: IfNotPresent
+        name: wait-frontend
+        resources: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5

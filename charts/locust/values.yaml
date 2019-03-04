@@ -1,0 +1,19 @@
+# Default values for node-exporter-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: locust
+namespace: default
+
+baseDomain: zqao8.k8s.ginger.eu-central-1.aws.gigantic.io
+
+image: theo01/loadgenerator 
+
+swarm:
+  name: locust-swarm
+
+target:
+  address: helloworld.tkma7.k8s.ginger.eu-central-1.aws.gigantic.io
+
+user:
+  count: 10  
